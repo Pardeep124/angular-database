@@ -20,7 +20,6 @@ app.get("/", async (req, res) => {
 app.post("/", async (req, res) => {
   try {
     await PostModel.create(req.body);
-    console.log(req.body);
     res.status(200).json({ message: "Post added Succesffuly" });
   } catch (error) {
     console.log(error);
@@ -36,6 +35,27 @@ app.delete("/:id", async (req, res) => {
   }
 });
 
+app.patch("/:id", async (req, res) => {
+  try {
+    const { name, title, description } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id))
+      return res.status(404).send(`No post with id: ${req.params.id}`);
+    await PostModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        title,
+        description,
+        _id: req.params.id,
+      },
+      { new: true }
+    );
+    res.status(200).json({ message: "Post Updated Successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 mongoose
   .connect(process.env.CONNECTION_URI, {
     useNewUrlParser: true,
@@ -43,7 +63,7 @@ mongoose
   })
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log("Server is running at Port: 5000");
+      console.log("Server is running at Port:", process.env.PORT);
     });
   })
   .catch((e) => console.log(e));
