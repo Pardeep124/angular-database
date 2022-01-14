@@ -30,6 +30,7 @@ app.post("/", async (req, res) => {
 app.delete("/:id", async (req, res) => {
   try {
     await PostModel.findByIdAndRemove(req.params.id);
+    res.status(200).json({ message: "Post Deleted Successfuly" });
   } catch (e) {
     console.log(e);
   }
